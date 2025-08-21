@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio Clase 1 - Manipulación del DOM</title>
+</head>
+
+<body style="display: flex; flex-direction: row;">
+    <div id="contenedor" style="margin-left: 30px; padding: 20px; border: 1px solid black;">
+        <h1 id="miTitulo"> Manipulación del DOM</h1>
+        <button onclick="cambiarTexto()">Cambiar Texto</button>
+        <button onclick="cambiarFondo()"> CAMBIAR FONDO</button>
+        <button onclick="restaurar()" id="btnRestaurar" style="display: none;">Restaurar</button>
+    </div>
+
+    <div style="margin-left: 30px;" style="padding: 20px; border: 1px solid black;">
+        <h1>Agregar Elemento</h1>
+        <input type="text" id="inputNuevoElemento">
+        <button onclick="agregarElemento()">Agregar Elemento</button>
+
+        <h2>Lista de Elementos</h2>
+        <div id="dvElementos" style="margin-left: 20px;">
+        </div>
+
+    </div>
+
+    
+    <script src="script.js"></script>
+</body>
+
+</html>
