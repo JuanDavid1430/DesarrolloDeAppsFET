@@ -17,19 +17,33 @@ function restaurar(){
     contenedor.style.backgroundColor = "";
 }
 
+function agregarElemento(){     
+    let nuevoElemento = inputNuevoElemento.value;     
+    if (nuevoElemento !== "") {         
+        Elementos.push(nuevoElemento);     
+    } else {         
+        alert("Por favor, ingresa un texto válido.");     
+    }      
+    
+    mostrarElementos();
+}  
 
-function agregarElemento(){
-    let nuevoElemento = inputNuevoElemento.value;
-    if (nuevoElemento !== "") {
-        Elementos.push(nuevoElemento);
-    } else {
-        alert("Por favor, ingresa un texto válido.");
-    }
+function eliminarElemento(){     
+    let indice = parseInt(inputEliminarElemento.value);     
+    if (!isNaN(indice) && indice >= 0 && indice < Elementos.length) {         
+        Elementos.splice(indice, 1);     
+    } else {         
+        alert("Por favor, ingresa un número válido.");     
+    }      
+    
+    mostrarElementos();
+}
 
-    dvElementos.innerHTML = "";
-    Elementos.forEach(function(elemento) {
-        let p = document.createElement("p");
-        p.textContent = elemento;
-        dvElementos.appendChild(p);
-    });
+function mostrarElementos() {
+    dvElementos.innerHTML = "";     
+    Elementos.forEach(function(elemento, indice) {         
+        let p = document.createElement("p");         
+        p.textContent = `${indice}: ${elemento}`;  
+        dvElementos.appendChild(p);     
+    }); 
 }

@@ -15,7 +15,7 @@
         <button onclick="restaurar()" id="btnRestaurar" style="display: none;">Restaurar</button>
     </div>
 
-    <div style="margin-left: 30px;" style="padding: 20px; border: 1px solid black;">
+    <div style="margin-left: 30px; padding: 20px; border: 1px solid rgb(0, 61, 10);">
         <h1>Agregar Elemento</h1>
         <input type="text" id="inputNuevoElemento">
         <button onclick="agregarElemento()">Agregar Elemento</button>
@@ -23,8 +23,14 @@
         <h2>Lista de Elementos</h2>
         <div id="dvElementos" style="margin-left: 20px;">
         </div>
-
     </div>
+
+    <div style="margin-left: 30px; padding: 20px; border: 1px solid rgb(160, 0, 0);">
+        <h1>Eliminar Elemento</h1>
+        <input type="text" id="inputEliminarElemento" placeholder="Ingrese el numero de la lista del elemento a eliminar">
+        <button onclick="eliminarElemento()">Eliminar Elemento</button>
+    </div>
+
 
     
     <script src="script.js"></script>
