@@ -1,1 +1,425 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Variables CSS para tema oscuro con azul */
+:root {
+  --primary-color: #4fc3f7;
+  --secondary-color: #64b5f6;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --danger-color: #f44336;
+  --dark-bg: #0d1117;
+  --card-bg: #161b22;
+  --card-hover-bg: #1f2428;
+  --dark-text: #f0f6fc;
+  --muted-text: #8b949e;
+  --border-color: #30363d;
+  --border-radius: 12px;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --transition: all 0.3s ease;
+  --placeholder-color: #6e7681;
+  --placeholder-color-focus: #8b949e;
+  --input-bg: #0d1117;
+  --input-hover-bg: #161b22;
+  --input-border: #30363d;
+  --input-hover-border: #484f58;
+  --accent-blue: #58a6ff;
+  --accent-blue-hover: #79c0ff;
+}
+
+/* Estilos generales */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+  min-height: 100vh;
+  padding: 20px;
+  color: var(--dark-text);
+}
+
+/* Contenedor principal */
+.app-container {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+/* Tarjetas */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  min-width: 300px;
+  flex: 1;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-blue));
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  background: var(--card-hover-bg);
+  border-color: var(--accent-blue);
+}
+
+/* Títulos de tarjetas */
+.card-title {
+  color: var(--dark-text);
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.card-title i {
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+}
+
+/* Grupos de botones */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Botones */
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-blue));
+  color: var(--dark-bg);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-blue), var(--primary-color));
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, var(--secondary-color), #42a5f5);
+  color: var(--dark-bg);
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #42a5f5, var(--secondary-color));
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success-color), #66bb6a);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #66bb6a, var(--success-color));
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, var(--warning-color), #ffb74d);
+  color: var(--dark-bg);
+  font-weight: 600;
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, #ffb74d, var(--warning-color));
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger-color), #ef5350);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #ef5350, var(--danger-color));
+}
+
+/* Grupos de entrada */
+.input-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* Campos de entrada */
+.form-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid var(--input-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: var(--transition);
+  outline: none;
+  background-color: var(--input-bg);
+  color: var(--dark-text);
+  font-weight: 500;
+}
+
+.form-input:hover {
+  border-color: var(--input-hover-border);
+  background-color: var(--input-hover-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.form-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+  background-color: var(--card-bg);
+  transform: translateY(-1px);
+}
+
+.form-input::placeholder {
+  color: var(--placeholder-color);
+  font-weight: 400;
+  font-style: italic;
+  opacity: 0.8;
+  transition: var(--transition);
+}
+
+.form-input:focus::placeholder {
+  color: var(--placeholder-color-focus);
+  opacity: 0.6;
+  transform: translateY(-2px);
+}
+
+.form-input:hover::placeholder {
+  color: var(--placeholder-color-focus);
+  opacity: 0.7;
+}
+
+/* Estilo para campos con contenido */
+.form-input:not(:placeholder-shown) {
+  background-color: var(--card-bg);
+  border-color: var(--accent-blue);
+}
+
+/* Indicador visual de estado */
+.input-group::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-blue));
+  border-radius: 1px;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.input-group:focus-within::after {
+  opacity: 1;
+}
+
+/* Títulos de sección */
+.section-title {
+  color: var(--dark-text);
+  font-size: 1.4rem;
+  margin: 20px 0 15px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.section-title i {
+  color: var(--success-color);
+  text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
+
+/* Lista de elementos */
+.elements-list {
+  background: var(--dark-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 15px;
+  min-height: 100px;
+}
+
+.element-item {
+  background: var(--card-bg);
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+  border: 1px solid var(--border-color);
+}
+
+.element-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border-color: var(--accent-blue);
+  background: var(--card-hover-bg);
+}
+
+.element-index {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-blue));
+  color: var(--dark-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 30px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.element-text {
+  color: var(--dark-text);
+  font-weight: 500;
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  color: var(--muted-text);
+  padding: 30px 20px;
+  background: linear-gradient(135deg, var(--dark-bg) 0%, var(--card-bg) 100%);
+  border-radius: 8px;
+  border: 2px dashed var(--border-color);
+}
+
+.empty-state i {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.5;
+  color: var(--muted-text);
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--muted-text);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .card {
+    min-width: auto;
+  }
+  
+  .input-group {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(79, 195, 247, 0.8);
+  }
+}
+
+/* Aplicar animaciones */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Efectos especiales */
+.card:hover::before {
+  animation: glow 2s ease-in-out infinite;
+}
