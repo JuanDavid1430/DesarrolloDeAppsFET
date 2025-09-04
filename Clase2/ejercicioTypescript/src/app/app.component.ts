@@ -1,67 +1,14 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'ejercicioTypescript';
-  
-  elementos: string[] = [];
-  nuevoElemento: string = '';
-  elementoAEliminar: string = '';
-  tituloOriginal = 'Manipulación del DOM';
-  tituloActual = 'Manipulación del DOM';
-  fondoOriginal = '';
-  fondoActual = '';
-  mostrarRestaurar = false;
-
-  numero1: number = 0;
-  numero2: number = 0;
-  resultado: number | null = null;
-
-  cambiarTexto() {
-    this.tituloActual = 'He manipulado el texto';
-    this.mostrarRestaurar = true;
-  }
-
-  cambiarFondo() {
-    this.fondoActual = 'lightblue';
-    this.mostrarRestaurar = true;
-  }
-
-  restaurar() {
-    this.tituloActual = this.tituloOriginal;
-    this.fondoActual = this.fondoOriginal;
-    this.mostrarRestaurar = false;
-  }
-
-  agregarElemento() {
-    if (this.nuevoElemento.trim() !== '') {
-      this.elementos.push(this.nuevoElemento);
-      this.nuevoElemento = '';
-    } else {
-      alert('Por favor, ingresa un texto válido.');
-    }
-  }
-
-  eliminarElemento() {
-    const indice = parseInt(this.elementoAEliminar);
-    if (!isNaN(indice) && indice >= 0 && indice < this.elementos.length) {
-      this.elementos.splice(indice, 1);
-      this.elementoAEliminar = '';
-    } else {
-      alert('Por favor, ingresa un número válido.');
-    }
-  }
-
-  sumarNumeros() {
-    this.resultado = this.numero1 + this.numero2;
-  }
 }

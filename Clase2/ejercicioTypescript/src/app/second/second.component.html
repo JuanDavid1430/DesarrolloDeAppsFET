@@ -1,0 +1,44 @@
+<div class="app-container">
+  <div class="card calculator">
+    <h2 class="section-title">
+      <i class="fas fa-calculator"></i> Calculadora - Suma de 2 Números
+    </h2>
+
+    <div class="input-group calculator-inputs">
+      <div class="input-field">
+        <label for="numero1">Número 1</label>
+        <input 
+          type="number" 
+          id="numero1"
+          class="form-input" 
+          [(ngModel)]="numero1"
+          placeholder="Ingresa el primer número">
+      </div>
+      
+      <div class="operator">
+        <i class="fas fa-plus"></i>
+      </div>
+      
+      <div class="input-field">
+        <label for="numero2">Número 2</label>
+        <input 
+          type="number" 
+          id="numero2"
+          class="form-input" 
+          [(ngModel)]="numero2"
+          placeholder="Ingresa el segundo número">
+      </div>
+    </div>
+
+    <button class="btn btn-info btn-calculate" (click)="sumarNumeros()">
+      <i class="fas fa-equals"></i> Calcular Suma
+    </button>
+
+    <div class="result-container" *ngIf="resultado !== null">
+      <h3 class="result">
+        <i class="fas fa-check-circle"></i>
+        Resultado: {{ resultado }}
+      </h3>
+    </div>
+  </div>
+</div>
