@@ -72,3 +72,39 @@
     </div>
   </div>
 </div>
+
+<div>
+  <h2 class="section-title">
+    <i class="fas fa-code"></i> Suma de 2 Numeros
+  </h2>
+
+
+  <div class="input-group">
+    <div>
+
+    
+    <label for="numero1">Número 1</label> <br>
+    <input 
+      type="number" 
+      class="form-input" 
+      [(ngModel)]="numero1"
+      placeholder="Número 1">
+    </div>
+    <div>
+    <label for="numero2">Número 2</label> <br>
+    <input 
+      type="number" 
+      class="form-input" 
+      [(ngModel)]="numero2"
+      placeholder="Número 2">
+    </div>
+    <button class="btn btn-info" (click)="sumarNumeros()">
+      <i class="fas fa-calculator"></i> Sumar
+    </button>
+
+    <div>
+      <h3 *ngIf="resultado !== null" class="result">
+        Resultado: {{ resultado }}
+      </h3>
+    </div>
+</div>

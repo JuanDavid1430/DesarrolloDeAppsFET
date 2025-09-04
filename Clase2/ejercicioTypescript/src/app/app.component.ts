@@ -22,6 +22,10 @@ export class AppComponent {
   fondoActual = '';
   mostrarRestaurar = false;
 
+  numero1: number = 0;
+  numero2: number = 0;
+  resultado: number | null = null;
+
   cambiarTexto() {
     this.tituloActual = 'He manipulado el texto';
     this.mostrarRestaurar = true;
@@ -55,5 +59,9 @@ export class AppComponent {
     } else {
       alert('Por favor, ingresa un número válido.');
     }
+  }
+
+  sumarNumeros() {
+    this.resultado = this.numero1 + this.numero2;
   }
 }
