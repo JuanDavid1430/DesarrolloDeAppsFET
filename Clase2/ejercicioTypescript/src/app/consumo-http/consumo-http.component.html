@@ -1,0 +1,140 @@
+<div class="app-container">
+  <div class="card http-consumer">
+    <h1 class="card-title">
+      <i class="fas fa-network-wired"></i> 
+      Consumo de APIs HTTP
+    </h1>
+    
+    <p class="description">
+      Esta sección demuestra cómo consumir APIs usando HttpClient de Angular.
+    </p>
+
+    <!-- Sección de Rick and Morty -->
+    <div class="rick-morty-section">
+      <h2 class="section-title">
+        <i class="fas fa-rocket"></i>
+        Rick and Morty Characters
+      </h2>
+      
+      <div class="button-group">
+        <button 
+          class="btn btn-success" 
+          (click)="consultarRickAndMorty()" 
+          [disabled]="rickAndMortyLoading">
+          <i class="fas fa-download" *ngIf="!rickAndMortyLoading"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="rickAndMortyLoading"></i>
+          {{ rickAndMortyLoading ? 'Cargando Personajes...' : 'Consultar Personajes' }}
+        </button>
+
+        <button 
+          class="btn btn-secondary" 
+          (click)="limpiarPersonajes()"
+          *ngIf="characters.length > 0 || rickAndMortyError">
+          <i class="fas fa-trash"></i>
+          Limpiar Personajes
+        </button>
+      </div>
+
+      <!-- Error message for Rick and Morty -->
+      <div class="error-message" *ngIf="rickAndMortyError">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ rickAndMortyError }}
+      </div>
+
+      <!-- Characters Grid -->
+      <div class="characters-grid" *ngIf="characters.length > 0">
+        <div class="character-card" *ngFor="let character of characters">
+          <div class="character-image">
+            <img [src]="character.image" [alt]="character.name" loading="lazy">
+            <div class="character-status" [class]="character.status.toLowerCase()">
+              {{ character.status }}
+            </div>
+          </div>
+          <div class="character-info">
+            <h3 class="character-name">{{ character.name }}</h3>
+            <div class="character-details">
+              <p><strong>Especie:</strong> {{ character.species }}</p>
+              <p><strong>Género:</strong> {{ character.gender }}</p>
+              <p><strong>Origen:</strong> {{ character.origin.name }}</p>
+              <p><strong>Ubicación:</strong> {{ character.location.name }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Separador -->
+    <hr class="section-divider" *ngIf="characters.length > 0 || apiResponse">
+
+    <!-- Botones para consultar diferentes endpoints (JSONPlaceholder) -->
+    <div class="jsonplaceholder-section">
+      <h2 class="section-title">
+        <i class="fas fa-database"></i>
+        JSONPlaceholder APIs
+      </h2>
+      
+      <div class="button-group">
+        <button 
+          class="btn btn-primary" 
+          (click)="consultarApi()" 
+          [disabled]="isLoading">
+          <i class="fas fa-download" *ngIf="!isLoading"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+          {{ isLoading ? 'Consultando...' : 'Consultar Post' }}
+        </button>
+
+        <button 
+          class="btn btn-info" 
+          (click)="consultarUsuarios()" 
+          [disabled]="isLoading">
+          <i class="fas fa-users" *ngIf="!isLoading"></i>
+          <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+          {{ isLoading ? 'Consultando...' : 'Consultar Usuarios' }}
+        </button>
+
+        <button 
+          class="btn btn-secondary" 
+          (click)="limpiarRespuesta()"
+          *ngIf="apiResponse || error">
+          <i class="fas fa-trash"></i>
+          Limpiar
+        </button>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="error-message" *ngIf="error">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error }}
+      </div>
+
+      <!-- Respuesta de la API -->
+      <div class="response-container" *ngIf="apiResponse">
+        <h3 class="section-title">
+          <i class="fas fa-code"></i>
+          Respuesta de la API
+        </h3>
+        
+        <div class="response-content">
+          <pre>{{ apiResponse | json }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="info-section" *ngIf="!apiResponse && !error && !isLoading && characters.length === 0 && !rickAndMortyError && !rickAndMortyLoading">
+      <h3>
+        <i class="fas fa-info-circle"></i>
+        Información
+      </h3>
+      <ul>
+        <li><strong>Rick and Morty API:</strong> Obtiene personajes de la serie con imágenes y detalles</li>
+        <li><strong>Consultar Post:</strong> Obtiene un post específico de JSONPlaceholder</li>
+        <li><strong>Consultar Usuarios:</strong> Obtiene la lista completa de usuarios</li>
+        <li><strong>APIs utilizadas:</strong> 
+          <a href="https://rickandmortyapi.com" target="_blank">Rick and Morty API</a> y 
+          <a href="https://jsonplaceholder.typicode.com" target="_blank">JSONPlaceholder</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
