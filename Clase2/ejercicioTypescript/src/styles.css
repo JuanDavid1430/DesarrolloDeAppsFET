@@ -275,7 +275,7 @@ body {
 
 /* Títulos de sección */
 .section-title {
-  color: var(--dark-text);
+  color: rgb(255, 255, 255);
   font-size: 1.4rem;
   margin: 20px 0 15px 0;
   display: flex;
