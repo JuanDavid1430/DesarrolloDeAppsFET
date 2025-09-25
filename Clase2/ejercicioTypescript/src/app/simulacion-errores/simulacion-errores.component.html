@@ -1,0 +1,114 @@
+<div class="error-simulation-container">
+  <header class="simulation-header">
+    <h1>Sistema de Visualización de Errores</h1>
+    <p>Análisis interactivo de trayectorias, relaciones y puntos críticos del código</p>
+  </header>
+
+  <div class="control-panel">
+    <div class="filter-controls">
+      <h3>Filtros de Severidad</h3>
+      <button 
+        class="filter-btn low" 
+        (click)="filterErrorsBySeverity('low')">
+        Baja ({{getErrorCountBySeverity('low')}})
+      </button>
+      <button 
+        class="filter-btn medium" 
+        (click)="filterErrorsBySeverity('medium')">
+        Media ({{getErrorCountBySeverity('medium')}})
+      </button>
+      <button 
+        class="filter-btn high" 
+        (click)="filterErrorsBySeverity('high')">
+        Alta ({{getErrorCountBySeverity('high')}})
+      </button>
+      <button 
+        class="filter-btn critical" 
+        (click)="filterErrorsBySeverity('critical')">
+        Crítica ({{getErrorCountBySeverity('critical')}})
+      </button>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <!-- Gráfica de Trayectorias -->
+    <div class="chart-container">
+      <h3>Trayectoria y Relaciones de Errores</h3>
+      <canvas #trajectoryChart></canvas>
+      <div class="chart-description">
+        <p>Visualización espacial de errores mostrando relaciones y distribución temporal. 
+           Cada punto representa un error, el tamaño indica el tipo y el color la severidad.</p>
+      </div>
+    </div>
+
+    <!-- Gráfica de Evolución -->
+    <div class="chart-container">
+      <h3>Evolución Temporal de Severidad</h3>
+      <canvas #errorEvolutionChart></canvas>
+      <div class="chart-description">
+        <p>Tendencia de la severidad de errores a lo largo del tiempo. 
+           Muestra cómo evoluciona la complejidad de los problemas.</p>
+      </div>
+    </div>
+
+    <!-- Gráfica de Puntos Críticos -->
+    <div class="chart-container">
+      <h3>Distribución por Severidad</h3>
+      <canvas #criticalPointsChart></canvas>
+      <div class="chart-description">
+        <p>Distribución porcentual de errores clasificados por nivel de severidad.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-details">
+    <h3>Detalles de Errores por Archivo</h3>
+    <div class="file-error-list">
+      <div *ngFor="let fileGroup of getKeyValuePairs(getErrorsByFile())" class="file-group">
+        <h4 class="file-name">📁 {{fileGroup.key}}</h4>
+        <div class="error-list">
+          <div 
+            *ngFor="let error of fileGroup.value" 
+            class="error-item"
+            [ngClass]="'severity-' + error.severity"
+            (click)="toggleErrorResolution(error.id)">
+            <div class="error-header">
+              <span class="error-type">{{error.errorType}}</span>
+              <span class="error-status" [ngClass]="error.resolved ? 'resolved' : 'pending'">
+                {{error.resolved ? '✅ Resuelto' : '❌ Pendiente'}}
+              </span>
+            </div>
+            <div class="error-description">{{error.description}}</div>
+            <div class="error-meta">
+              <span>Línea: {{error.line}}</span>
+              <span>Fecha: {{error.timestamp | date:'short'}}</span>
+              <span class="severity-badge severity-{{error.severity}}">{{error.severity | uppercase}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <h4>Leyenda</h4>
+    <div class="legend-items">
+      <div class="legend-item">
+        <div class="color-indicator low"></div>
+        <span>Severidad Baja</span>
+      </div>
+      <div class="legend-item">
+        <div class="color-indicator medium"></div>
+        <span>Severidad Media</span>
+      </div>
+      <div class="legend-item">
+        <div class="color-indicator high"></div>
+        <span>Severidad Alta</span>
+      </div>
+      <div class="legend-item">
+        <div class="color-indicator critical"></div>
+        <span>Severidad Crítica</span>
+      </div>
+    </div>
+  </div>
+</div>
