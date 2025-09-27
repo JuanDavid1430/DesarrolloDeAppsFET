@@ -1,0 +1,23 @@
+ion-col {
+  background-color: #135d54;
+  border: solid 1px #fff;
+  color: #fff;
+  text-align: center;
+}
+
+// Estilos para Infinite Scroll
+.infinite-scroll-container {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+
+// Estilos generales para los títulos
+h2 {
+  color: var(--ion-color-primary);
+  margin: 20px 0 16px 0;
+  font-weight: 600;
+}

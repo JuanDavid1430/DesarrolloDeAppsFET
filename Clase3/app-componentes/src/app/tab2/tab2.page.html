@@ -1,17 +1,318 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 2
+      Tab 2  - Juan David Collazos Garzon
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Tab 2</ion-title>
     </ion-toolbar>
   </ion-header>
 
+  <h2>Item</h2>
+  <ion-item>
+    <ion-label>Basic Item</ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>
+      Multi-line text that should wrap when it is too long to fit on one line. Lorem ipsum dolor sit amet, consectetur
+      adipiscing elit.
+    </ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label class="ion-text-nowrap">
+      Multi-line text that should ellipsis when it is too long to fit on one line. Lorem ipsum dolor sit amet,
+      consectetur
+      adipiscing elit.
+    </ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>
+      <h1>H1 Heading</h1>
+      <p>Paragraph</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>
+      <h2>H2 Heading</h2>
+      <p>Paragraph</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>
+      <h3>H3 Heading</h3>
+      <p>Paragraph</p>
+    </ion-label>
+  </ion-item>
+
+  <hr>
+
+  <h2>Lista</h2>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>Pokémon Yellow</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Mega Man X</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>The Legend of Zelda</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Pac-Man</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Super Mario World</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <hr>
+  <h2>Avatar</h2>
+
+  <ion-avatar>
+    <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+  </ion-avatar>
+
+  <hr>
+  <h2>Menú</h2>
+
+  <!-- Componente de Menú -->
+  <ion-menu contentId="main-content-tab2">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Menu Content</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">This is the menu content.</ion-content>
+  </ion-menu>
+
+  <div class="ion-page" id="main-content-tab2"
+    style="height: 300px; border: 1px solid var(--ion-color-light-shade); border-radius: 8px; margin-bottom: 20px;">
+    <ion-header>
+      <ion-toolbar color="light">
+        <ion-buttons slot="start">
+          <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Menu Demo</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <p>Tap the button in the toolbar to open the menu.</p>
+    </ion-content>
+  </div>
+
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+  <hr>
+  <h2>Modal</h2>
+
+  <div class="modal-demo"
+    style="border: 1px solid var(--ion-color-light-shade); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+    <ion-button id="open-modal" expand="block">Open Modal</ion-button>
+    <p>{{ message }}</p>
+    <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)" #modal>
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="cancel()">Cancel</ion-button>
+            </ion-buttons>
+            <ion-title>Welcome</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <ion-item>
+            <ion-input label="Enter your name" labelPlacement="stacked" type="text" placeholder="Your name"
+              [(ngModel)]="name"></ion-input>
+          </ion-item>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  </div>
+
+  <hr>
+
+  <h2>Navigation with Modal</h2>
+
+  <div class="navigation-modal-demo"
+    style="border: 1px solid var(--ion-color-light-shade); border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+    <ion-button id="open-nav-modal" expand="block">Open Navigation Modal</ion-button>
+
+    <ion-modal trigger="open-nav-modal" (willPresent)="onWillPresent()" #navModal>
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="closeNavModal()">Close</ion-button>
+            </ion-buttons>
+            <ion-title>{{ getCurrentPageTitle() }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="navigateBack()" [disabled]="navigationStack.length <= 1">Back</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="ion-padding">
+          <!-- Page One -->
+          <div *ngIf="currentPage === 'page-one'">
+            <h1>Page One</h1>
+            <p>This is the first page in the navigation stack.</p>
+            <ion-button (click)="navigateToPage('page-two')" expand="block">Go to Page Two</ion-button>
+          </div>
+
+          <!-- Page Two -->
+          <div *ngIf="currentPage === 'page-two'">
+            <h1>Page Two</h1>
+            <p>This is the second page. You can go forward or back.</p>
+            <ion-button (click)="navigateToPage('page-three')" expand="block">Go to Page Three</ion-button>
+            <ion-button (click)="navigateBack()" expand="block" fill="outline">Go Back</ion-button>
+          </div>
+
+          <!-- Page Three -->
+          <div *ngIf="currentPage === 'page-three'">
+            <h1>Page Three</h1>
+            <p>This is the final page in our navigation demo.</p>
+            <ion-button (click)="navigateBack()" expand="block">Go Back</ion-button>
+            <ion-button (click)="navigateToRoot()" expand="block" fill="outline">Go to Root</ion-button>
+          </div>
+
+          <!-- Navigation Info -->
+          <div class="navigation-info"
+            style="margin-top: 20px; padding: 16px; background: var(--ion-color-light); border-radius: 8px;">
+            <h4>Navigation Stack:</h4>
+            <p>{{ navigationStack.join(' → ') }}</p>
+            <p>Current: {{ currentPage }}</p>
+          </div>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  </div>
+
+  <hr>
+  <h2>PopOver</h2>
+  <ion-button id="click-trigger">Left-Click Me</ion-button>
+  <ion-popover trigger="click-trigger" triggerAction="click">
+    <ng-template>
+      <ion-content class="ion-padding">Hello World!</ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <ion-button id="context-menu-trigger">Right-Click Me</ion-button>
+  <ion-popover trigger="context-menu-trigger" triggerAction="context-menu">
+    <ng-template>
+      <ion-content class="ion-padding">Hello World!</ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <ion-button id="hover-trigger">Hover Over Me</ion-button>
+  <ion-popover trigger="hover-trigger" triggerAction="hover">
+    <ng-template>
+      <ion-content class="ion-padding">Hello World!</ion-content>
+    </ng-template>
+  </ion-popover>
+  <hr>
+
+  <hr>
+
+  <h2>Progress Bar</h2>
+  <ion-progress-bar [value]="progress"></ion-progress-bar>
+
+  <hr>
+  <h2>Radio</h2>
+  <ion-radio-group value="strawberries">
+    <ion-radio value="grapes">Grapes</ion-radio><br />
+    <ion-radio value="strawberries">Strawberries</ion-radio><br />
+    <ion-radio value="pineapple">Pineapple</ion-radio><br />
+    <ion-radio value="cherries">Cherries</ion-radio>
+  </ion-radio-group>
+
+  <hr>
+  <h2>Range</h2>
+  <ion-range labelPlacement="start" label="Label at the Start"></ion-range>
+
+  <br />
+
+  <ion-range labelPlacement="end" label="Label at the End"></ion-range>
+
+  <br />
+
+  <ion-range labelPlacement="fixed" label="Fixed Width Label"></ion-range>
+
+  <br />
+
+
+  <hr>
+
+  <hr>
+
+  <h2>Reorder</h2>
+
+  <ion-list>
+    <!-- The reorder gesture is disabled by default, enable it to drag and drop items -->
+    <!-- Casting $event to $any is a temporary fix for this bug https://github.com/ionic-team/ionic-framework/issues/24245 -->
+    <ion-reorder-group [disabled]="false" (ionReorderEnd)="handleReorderEnd($any($event))">
+      <ion-item>
+        <ion-label> Item 1 </ion-label>
+        <ion-reorder slot="end"></ion-reorder>
+      </ion-item>
+
+      <ion-item>
+        <ion-label> Item 2 </ion-label>
+        <ion-reorder slot="end"></ion-reorder>
+      </ion-item>
+
+      <ion-item>
+        <ion-label> Item 3 </ion-label>
+        <ion-reorder slot="end"></ion-reorder>
+      </ion-item>
+
+      <ion-item>
+        <ion-label> Item 4 </ion-label>
+        <ion-reorder slot="end"></ion-reorder>
+      </ion-item>
+
+      <ion-item>
+        <ion-label> Item 5 </ion-label>
+        <ion-reorder slot="end"></ion-reorder>
+      </ion-item>
+    </ion-reorder-group>
+  </ion-list>
+
+  <hr>
+
+  <h2>Refresher</h2>
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Pull to Refresh</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <p>Pull this content down to trigger the refresh.</p>
+  </ion-content>
+  <ion-range labelPlacement="stacked" label="Stacked Label"></ion-range>
   <app-explore-container name="Tab 2 page"></app-explore-container>
 </ion-content>

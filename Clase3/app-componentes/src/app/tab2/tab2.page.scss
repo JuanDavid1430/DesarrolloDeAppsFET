@@ -1,0 +1,51 @@
+// Estilos para Tab2 Page
+
+// Estilos para el componente de menú
+#main-content-tab2 {
+  position: relative;
+  
+  ion-header ion-toolbar {
+    --background: var(--ion-color-light);
+    --color: var(--ion-color-dark);
+  }
+  
+  ion-content {
+    --background: var(--ion-color-light-tint);
+    
+    p {
+      color: var(--ion-color-medium-shade);
+      text-align: center;
+      margin-top: 50px;
+      font-size: 1.1em;
+    }
+  }
+}
+
+// Estilos para el componente modal
+.modal-demo {
+  ion-button {
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--ion-color-medium-shade);
+    font-size: 0.9em;
+    line-height: 1.4;
+    text-align: center;
+    margin: 16px 0;
+  }
+}
+
+// Estilos para Navigation Modal
+.navigation-modal-demo {
+  ion-button {
+    margin-bottom: 16px;
+  }
+}
+
+// Estilos generales para los títulos
+h2 {
+  color: var(--ion-color-primary);
+  margin: 20px 0 16px 0;
+  font-weight: 600;
+}
