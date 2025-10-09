@@ -1,7 +1,10 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chart, registerables } from 'chart.js';
-import { ErrorPoint, ErrorTrajectory, ErrorVisualizationData } from '../interfaces/error.interface';
+import { Subscription } from 'rxjs';
+import { AnalisisVectorialService } from './analisis-vectorial.service';
+import { VectorFlujo, EstadisticasVectoriales } from './modelos/vector-flujo.model';
+import { ReporteError } from './modelos/reporte-error.model';
 
 Chart.register(...registerables);
 
@@ -12,169 +15,112 @@ Chart.register(...registerables);
   templateUrl: './simulacion-errores.component.html',
   styleUrl: './simulacion-errores.component.css'
 })
-export class SimulacionErroresComponent implements OnInit, AfterViewInit {
-  @ViewChild('trajectoryChart', { static: false }) trajectoryChartRef!: ElementRef;
-  @ViewChild('errorEvolutionChart', { static: false }) evolutionChartRef!: ElementRef;
-  @ViewChild('criticalPointsChart', { static: false }) criticalPointsChartRef!: ElementRef;
+export class SimulacionErroresComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('vectorFieldChart') vectorFieldChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('magnitudChart') magnitudChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('estadoChart') estadoChartRef!: ElementRef<HTMLCanvasElement>;
 
-  private trajectoryChart!: Chart;
-  private evolutionChart!: Chart;
-  private criticalPointsChart!: Chart;
+  private vectorFieldChart?: Chart;
+  private magnitudChart?: Chart;
+  private estadoChart?: Chart;
 
-  errorData: ErrorVisualizationData = {
-    trajectories: [],
-    criticalPoints: [],
-    relationships: []
+  // Datos reactivos
+  vectores: VectorFlujo[] = [];
+  reportes: ReporteError[] = [];
+  estadisticas: EstadisticasVectoriales = {
+    magnitudPromedio: 0,
+    desviacionEstandar: 0,
+    vectoresConError: 0,
+    vectoresConWarning: 0,
+    vectoresOk: 0,
+    cambiosBruscosDetectados: 0
   };
 
-  // Datos quemados para simulación
-  mockErrorData: ErrorPoint[] = [
-    {
-      id: 1,
-      timestamp: new Date('2024-09-01T10:00:00'),
-      severity: 'medium',
-      errorType: 'NullPointerException',
-      description: 'Variable no inicializada en componente',
-      line: 45,
-      file: 'user.component.ts',
-      resolved: false,
-      x: 1,
-      y: 2
-    },
-    {
-      id: 2,
-      timestamp: new Date('2024-09-02T14:30:00'),
-      severity: 'high',
-      errorType: 'TypeError',
-      description: 'Intento de acceso a propiedad undefined',
-      line: 78,
-      file: 'data.service.ts',
-      resolved: false,
-      x: 2,
-      y: 4
-    },
-    {
-      id: 3,
-      timestamp: new Date('2024-09-03T09:15:00'),
-      severity: 'critical',
-      errorType: 'SecurityError',
-      description: 'Vulnerabilidad XSS detectada',
-      line: 123,
-      file: 'sanitizer.service.ts',
-      resolved: true,
-      x: 3,
-      y: 5
-    },
-    {
-      id: 4,
-      timestamp: new Date('2024-09-04T16:45:00'),
-      severity: 'low',
-      errorType: 'DeprecationWarning',
-      description: 'Uso de método obsoleto',
-      line: 200,
-      file: 'legacy.component.ts',
-      resolved: false,
-      x: 4,
-      y: 1
-    },
-    {
-      id: 5,
-      timestamp: new Date('2024-09-05T11:20:00'),
-      severity: 'high',
-      errorType: 'MemoryLeak',
-      description: 'Suscripción sin unsubscribe',
-      line: 89,
-      file: 'subscription.component.ts',
-      resolved: false,
-      x: 5,
-      y: 4
-    },
-    {
-      id: 6,
-      timestamp: new Date('2024-09-06T13:10:00'),
-      severity: 'medium',
-      errorType: 'ValidationError',
-      description: 'Formulario inválido no manejado',
-      line: 156,
-      file: 'form.component.ts',
-      resolved: true,
-      x: 6,
-      y: 3
-    }
-  ];
+  private subscriptions: Subscription = new Subscription();
 
-  ngOnInit() {
-    this.initializeErrorData();
+  constructor(private analisisVectorialService: AnalisisVectorialService) {}
+
+  ngOnInit(): void {
+    // Suscribirse a los observables del servicio
+    this.subscriptions.add(
+      this.analisisVectorialService.vectores$.subscribe(vectores => {
+        this.vectores = vectores;
+        this.actualizarGraficas();
+      })
+    );
+
+    this.subscriptions.add(
+      this.analisisVectorialService.reportes$.subscribe(reportes => {
+        this.reportes = reportes;
+      })
+    );
+
+    this.subscriptions.add(
+      this.analisisVectorialService.estadisticas$.subscribe(estadisticas => {
+        this.estadisticas = estadisticas;
+      })
+    );
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
+    // Usar setTimeout para asegurar que el DOM está listo
     setTimeout(() => {
-      this.createTrajectoryChart();
-      this.createEvolutionChart();
-      this.createCriticalPointsChart();
+      this.inicializarGraficas();
     }, 100);
   }
 
-  private initializeErrorData() {
-    // Crear trayectorias basadas en los errores mockeados
-    this.errorData = {
-      trajectories: [
-        {
-          errorId: 1,
-          points: [this.mockErrorData[0], this.mockErrorData[1]],
-          relationships: [2, 3]
-        },
-        {
-          errorId: 2,
-          points: [this.mockErrorData[1], this.mockErrorData[2]],
-          relationships: [1, 4]
-        }
-      ],
-      criticalPoints: this.mockErrorData.filter(error => error.severity === 'critical' || error.severity === 'high'),
-      relationships: [
-        { from: 1, to: 2, type: 'causes' },
-        { from: 2, to: 3, type: 'related' },
-        { from: 4, to: 5, type: 'blocks' }
-      ]
-    };
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+    this.destruirGraficas();
   }
 
-  private createTrajectoryChart() {
-    const ctx = this.trajectoryChartRef.nativeElement.getContext('2d');
-    
-    this.trajectoryChart = new Chart(ctx, {
+  private inicializarGraficas(): void {
+    if (this.vectorFieldChartRef && this.magnitudChartRef && this.estadoChartRef) {
+      this.crearGraficaCampoVectorial();
+      this.crearGraficaMagnitudes();
+      this.crearGraficaEstados();
+    }
+  }
+
+  private crearGraficaCampoVectorial(): void {
+    const ctx = this.vectorFieldChartRef?.nativeElement?.getContext('2d');
+    if (!ctx) return;
+
+    this.vectorFieldChart = new Chart(ctx, {
       type: 'scatter',
       data: {
         datasets: [{
-          label: 'Trayectoria de Errores',
-          data: this.mockErrorData.map(error => ({
-            x: error.x,
-            y: error.y,
-            errorInfo: error
+          label: 'Campo Vectorial de Flujo',
+          data: this.vectores.map((v, index) => ({
+            x: index,
+            y: v.magnitud,
+            vector: v
           })),
-          backgroundColor: this.mockErrorData.map(error => this.getColorBySeverity(error.severity)),
-          borderColor: this.mockErrorData.map(error => this.getColorBySeverity(error.severity)),
-          pointRadius: this.mockErrorData.map(error => this.getSizeByType(error.errorType)),
-          pointHoverRadius: 10
+          backgroundColor: this.vectores.map(v => this.getColorByEstado(v.estado)),
+          borderColor: this.vectores.map(v => this.getColorByEstado(v.estado)),
+          pointRadius: 8,
+          pointHoverRadius: 12
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,
-            text: 'Trayectoria y Relaciones de Errores'
+            text: 'Campo Vectorial - Representación del Flujo de Código',
+            font: { size: 16, weight: 'bold' }
           },
           tooltip: {
             callbacks: {
               label: (context: any) => {
-                const error = context.raw.errorInfo;
+                const vector = context.raw.vector as VectorFlujo;
                 return [
-                  `Tipo: ${error.errorType}`,
-                  `Severidad: ${error.severity}`,
-                  `Archivo: ${error.file}`,
-                  `Línea: ${error.line}`,
-                  `Estado: ${error.resolved ? 'Resuelto' : 'Pendiente'}`
+                  `ID: ${vector.id}`,
+                  `${vector.origen} → ${vector.destino}`,
+                  `Magnitud: ${vector.magnitud.toFixed(2)}`,
+                  `Dirección: ${vector.direccion}`,
+                  `Estado: ${vector.estado.toUpperCase()}`
                 ];
               }
             }
@@ -184,184 +130,335 @@ export class SimulacionErroresComponent implements OnInit, AfterViewInit {
           x: {
             title: {
               display: true,
-              text: 'Tiempo (días)'
+              text: 'Secuencia de Ejecución'
             }
           },
           y: {
             title: {
               display: true,
-              text: 'Complejidad del Error'
-            }
+              text: 'Magnitud (Complejidad)'
+            },
+            min: 0,
+            max: 12
           }
         }
       }
     });
   }
 
-  private createEvolutionChart() {
-    const ctx = this.evolutionChartRef.nativeElement.getContext('2d');
-    
-    const evolutionData = this.mockErrorData.map((error, index) => ({
-      x: index + 1,
-      y: this.getSeverityValue(error.severity)
-    }));
+  private crearGraficaMagnitudes(): void {
+    const ctx = this.magnitudChartRef?.nativeElement?.getContext('2d');
+    if (!ctx) return;
 
-    this.evolutionChart = new Chart(ctx, {
+    this.magnitudChart = new Chart(ctx, {
       type: 'line',
       data: {
+        labels: this.vectores.map(v => v.id),
         datasets: [{
-          label: 'Evolución de la Severidad',
-          data: evolutionData,
-          borderColor: 'rgb(255, 99, 132)',
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          label: 'Magnitud del Vector',
+          data: this.vectores.map(v => v.magnitud),
+          borderColor: 'rgb(54, 162, 235)',
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
           tension: 0.4,
-          fill: true
+          fill: true,
+          borderWidth: 2
+        }, {
+          label: 'Promedio',
+          data: Array(this.vectores.length).fill(this.estadisticas.magnitudPromedio),
+          borderColor: 'rgb(255, 99, 132)',
+          borderDash: [5, 5],
+          borderWidth: 2,
+          pointRadius: 0
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,
-            text: 'Evolución Temporal de Errores'
+            text: 'Análisis de Magnitudes - Detección de Anomalías',
+            font: { size: 16, weight: 'bold' }
           }
         },
         scales: {
-          x: {
-            title: {
-              display: true,
-              text: 'Secuencia de Errores'
-            }
-          },
           y: {
             title: {
               display: true,
-              text: 'Nivel de Severidad'
+              text: 'Magnitud'
             },
-            min: 0,
-            max: 5
+            min: 0
           }
         }
       }
     });
   }
 
-  private createCriticalPointsChart() {
-    const ctx = this.criticalPointsChartRef.nativeElement.getContext('2d');
-    
-    const severityCount = this.mockErrorData.reduce((acc, error) => {
-      acc[error.severity] = (acc[error.severity] || 0) + 1;
-      return acc;
-    }, {} as { [key: string]: number });
+  private crearGraficaEstados(): void {
+    const ctx = this.estadoChartRef?.nativeElement?.getContext('2d');
+    if (!ctx) return;
 
-    this.criticalPointsChart = new Chart(ctx, {
+    this.estadoChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: Object.keys(severityCount),
+        labels: ['OK', 'Warning', 'Error'],
         datasets: [{
-          data: Object.values(severityCount),
+          data: [
+            this.estadisticas.vectoresOk,
+            this.estadisticas.vectoresConWarning,
+            this.estadisticas.vectoresConError
+          ],
           backgroundColor: [
-            '#ff6384',
-            '#36a2eb',
-            '#ffcd56',
-            '#4bc0c0'
-          ]
+            'rgb(75, 192, 192)',
+            'rgb(255, 205, 86)',
+            'rgb(255, 99, 132)'
+          ],
+          borderWidth: 2
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           title: {
             display: true,
-            text: 'Distribución de Errores por Severidad'
+            text: 'Distribución de Estados',
+            font: { size: 16, weight: 'bold' }
           }
         }
       }
     });
   }
 
-  private getColorBySeverity(severity: string): string {
-    const colors = {
-      low: '#4CAF50',
-      medium: '#FFC107',
-      high: '#FF9800',
-      critical: '#F44336'
-    };
-    return colors[severity as keyof typeof colors] || '#9E9E9E';
-  }
-
-  private getSizeByType(errorType: string): number {
-    const sizes = {
-      'NullPointerException': 6,
-      'TypeError': 8,
-      'SecurityError': 12,
-      'DeprecationWarning': 4,
-      'MemoryLeak': 10,
-      'ValidationError': 7
-    };
-    return sizes[errorType as keyof typeof sizes] || 6;
-  }
-
-  private getSeverityValue(severity: string): number {
-    const values = {
-      low: 1,
-      medium: 2,
-      high: 4,
-      critical: 5
-    };
-    return values[severity as keyof typeof values] || 1;
-  }
-
-  // Métodos para interacción
-  filterErrorsBySeverity(severity: string) {
-    const filteredErrors = this.mockErrorData.filter(error => error.severity === severity);
-    console.log(`Errores de severidad ${severity}:`, filteredErrors);
-  }
-
-  toggleErrorResolution(errorId: number) {
-    const error = this.mockErrorData.find(e => e.id === errorId);
-    if (error) {
-      error.resolved = !error.resolved;
-      // Actualizar gráficas
-      this.updateCharts();
-    }
-  }
-
-  private updateCharts() {
-    if (this.trajectoryChart) {
-      this.trajectoryChart.data.datasets[0].data = this.mockErrorData.map(error => ({
-        x: error.x,
-        y: error.y,
-        errorInfo: error
+  private actualizarGraficas(): void {
+    if (this.vectorFieldChart) {
+      this.vectorFieldChart.data.datasets[0].data = this.vectores.map((v, index) => ({
+        x: index,
+        y: v.magnitud,
+        vector: v
       }));
-      this.trajectoryChart.update();
+      this.vectorFieldChart.data.datasets[0].backgroundColor = this.vectores.map(v => this.getColorByEstado(v.estado));
+      this.vectorFieldChart.data.datasets[0].borderColor = this.vectores.map(v => this.getColorByEstado(v.estado));
+      this.vectorFieldChart.update('none');
+    }
+
+    if (this.magnitudChart) {
+      this.magnitudChart.data.labels = this.vectores.map(v => v.id);
+      this.magnitudChart.data.datasets[0].data = this.vectores.map(v => v.magnitud);
+      this.magnitudChart.data.datasets[1].data = Array(this.vectores.length).fill(this.estadisticas.magnitudPromedio);
+      this.magnitudChart.update('none');
+    }
+
+    if (this.estadoChart) {
+      this.estadoChart.data.datasets[0].data = [
+        this.estadisticas.vectoresOk,
+        this.estadisticas.vectoresConWarning,
+        this.estadisticas.vectoresConError
+      ];
+      this.estadoChart.update('none');
     }
   }
 
-  getErrorsByFile(): { [file: string]: ErrorPoint[] } {
-    return this.mockErrorData.reduce((acc, error) => {
-      if (!acc[error.file]) {
-        acc[error.file] = [];
+  private destruirGraficas(): void {
+    if (this.vectorFieldChart) {
+      this.vectorFieldChart.destroy();
+    }
+    if (this.magnitudChart) {
+      this.magnitudChart.destroy();
+    }
+    if (this.estadoChart) {
+      this.estadoChart.destroy();
+    }
+  }
+
+  private getColorByEstado(estado: 'ok' | 'warning' | 'error'): string {
+    const colores = {
+      ok: 'rgb(75, 192, 192)',
+      warning: 'rgb(255, 205, 86)',
+      error: 'rgb(255, 99, 132)'
+    };
+    return colores[estado];
+  }
+
+  // Métodos públicos para interacción
+  simularNuevoVector(): void {
+    this.analisisVectorialService.simularNuevoVector();
+  }
+
+  limpiarReportes(): void {
+    this.analisisVectorialService.limpiarReportes();
+  }
+
+  reiniciarAnalisis(): void {
+    this.analisisVectorialService.reiniciarAnalisis();
+  }
+
+  getSeveridadClass(severidad: string): string {
+    return `severidad-${severidad}`;
+  }
+
+  getTipoIcon(tipo: string): string {
+    const iconos = {
+      flujo: '🔄',
+      magnitud: '📊',
+      direccion: '➡️',
+      sistema: '⚙️'
+    };
+    return iconos[tipo as keyof typeof iconos] || '⚠️';
+  }
+
+  getEstadoIcon(estado: string): string {
+    const iconos = {
+      ok: '✅',
+      warning: '⚠️',
+      error: '❌'
+    };
+    return iconos[estado as keyof typeof iconos] || '❓';
+  }
+
+  formatearFecha(fecha: Date): string {
+    return new Date(fecha).toLocaleString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
+
+  trackByReporteId(index: number, reporte: ReporteError): string {
+    return reporte.id;
+  }
+
+  trackByVectorId(index: number, vector: VectorFlujo): string {
+    return vector.id;
+  }
+
+  exportarReportesATxt(): void {
+    if (this.reportes.length === 0) {
+      alert('No hay reportes para exportar');
+      return;
+    }
+
+    // Generar contenido del archivo
+    let contenido = '═══════════════════════════════════════════════════════════════\n';
+    contenido += '    REPORTE DE ANÁLISIS VECTORIAL - DETECCIÓN DE ANOMALÍAS    \n';
+    contenido += '═══════════════════════════════════════════════════════════════\n\n';
+    contenido += `Fecha de generación: ${new Date().toLocaleString('es-ES')}\n`;
+    contenido += `Total de reportes: ${this.reportes.length}\n\n`;
+    
+    // Estadísticas generales
+    contenido += '─────────────────────────────────────────────────────────────\n';
+    contenido += '                   ESTADÍSTICAS GENERALES                     \n';
+    contenido += '─────────────────────────────────────────────────────────────\n';
+    contenido += `Magnitud Promedio: ${this.estadisticas.magnitudPromedio.toFixed(2)}\n`;
+    contenido += `Desviación Estándar: ${this.estadisticas.desviacionEstandar.toFixed(2)}\n`;
+    contenido += `Vectores OK: ${this.estadisticas.vectoresOk}\n`;
+    contenido += `Vectores Warning: ${this.estadisticas.vectoresConWarning}\n`;
+    contenido += `Vectores Error: ${this.estadisticas.vectoresConError}\n`;
+    contenido += `Cambios Bruscos Detectados: ${this.estadisticas.cambiosBruscosDetectados}\n\n`;
+
+    // Agrupar reportes por severidad
+    const reportesPorSeveridad = {
+      critica: this.reportes.filter(r => r.severidad === 'critica'),
+      alta: this.reportes.filter(r => r.severidad === 'alta'),
+      media: this.reportes.filter(r => r.severidad === 'media'),
+      baja: this.reportes.filter(r => r.severidad === 'baja')
+    };
+
+    // Imprimir reportes por severidad
+    ['critica', 'alta', 'media', 'baja'].forEach(severidad => {
+      const reportes = reportesPorSeveridad[severidad as keyof typeof reportesPorSeveridad];
+      if (reportes.length > 0) {
+        contenido += '═══════════════════════════════════════════════════════════════\n';
+        contenido += `  REPORTES DE SEVERIDAD: ${severidad.toUpperCase()} (${reportes.length})  \n`;
+        contenido += '═══════════════════════════════════════════════════════════════\n\n';
+
+        reportes.forEach((reporte, index) => {
+          contenido += `[${index + 1}] ─────────────────────────────────────────────────────\n`;
+          contenido += `ID: ${reporte.id}\n`;
+          contenido += `Tipo: ${reporte.tipo.toUpperCase()}\n`;
+          contenido += `Severidad: ${reporte.severidad.toUpperCase()}\n`;
+          contenido += `Fecha: ${this.formatearFecha(reporte.fecha)}\n`;
+          contenido += `Descripción: ${reporte.descripcion}\n`;
+          
+          if (reporte.vectorRelacionado) {
+            contenido += `\nVector Relacionado:\n`;
+            contenido += `  - ID: ${reporte.vectorRelacionado.id}\n`;
+            contenido += `  - Flujo: ${reporte.vectorRelacionado.origen} → ${reporte.vectorRelacionado.destino}\n`;
+            contenido += `  - Magnitud: ${reporte.vectorRelacionado.magnitud.toFixed(2)}\n`;
+            contenido += `  - Dirección: ${reporte.vectorRelacionado.direccion}\n`;
+            contenido += `  - Estado: ${reporte.vectorRelacionado.estado.toUpperCase()}\n`;
+          }
+          contenido += '\n';
+        });
       }
-      acc[error.file].push(error);
-      return acc;
-    }, {} as { [file: string]: ErrorPoint[] });
+    });
+
+    // Agregar vectores activos
+    contenido += '═══════════════════════════════════════════════════════════════\n';
+    contenido += `           VECTORES ACTIVOS EN EL SISTEMA (${this.vectores.length})           \n`;
+    contenido += '═══════════════════════════════════════════════════════════════\n\n';
+    
+    this.vectores.forEach((vector, index) => {
+      contenido += `[${index + 1}] ${vector.id} - ${vector.estado.toUpperCase()}\n`;
+      contenido += `    Flujo: ${vector.origen} → ${vector.destino}\n`;
+      contenido += `    Magnitud: ${vector.magnitud.toFixed(2)} | Dirección: ${vector.direccion}\n`;
+      contenido += `    Timestamp: ${this.formatearFecha(vector.timestamp)}\n\n`;
+    });
+
+    // Pie de página
+    contenido += '═══════════════════════════════════════════════════════════════\n';
+    contenido += '           Sistema de Análisis Vectorial del Flujo              \n';
+    contenido += '                    Angular 18 - Chart.js - RxJS                \n';
+    contenido += '═══════════════════════════════════════════════════════════════\n';
+
+    // Crear y descargar archivo
+    const blob = new Blob([contenido], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    const fechaArchivo = new Date().toISOString().split('T')[0];
+    const horaArchivo = new Date().toTimeString().split(' ')[0].replace(/:/g, '-');
+    link.download = `reporte_analisis_vectorial_${fechaArchivo}_${horaArchivo}.txt`;
+    
+    link.click();
+    window.URL.revokeObjectURL(url);
+    
+    console.log('✅ Reporte exportado exitosamente');
   }
 
-  // Métodos auxiliares para el template
-  getErrorCountBySeverity(severity: string): number {
-    return this.mockErrorData.filter(e => e.severity === severity).length;
-  }
+  exportarReportesJSON(): void {
+    if (this.reportes.length === 0) {
+      alert('No hay reportes para exportar');
+      return;
+    }
 
-  getObjectKeys(obj: any): string[] {
-    return Object.keys(obj);
-  }
+    const datosExportacion = {
+      fechaGeneracion: new Date().toISOString(),
+      estadisticas: this.estadisticas,
+      reportes: this.reportes,
+      vectores: this.vectores,
+      metadata: {
+        totalReportes: this.reportes.length,
+        totalVectores: this.vectores.length,
+        sistema: 'Análisis Vectorial del Flujo de Código',
+        version: '1.0.0'
+      }
+    };
 
-  getObjectValues(obj: any): any[] {
-    return Object.values(obj);
-  }
-
-  getKeyValuePairs(obj: any): Array<{key: string, value: any}> {
-    return Object.keys(obj).map(key => ({key, value: obj[key]}));
+    const contenidoJSON = JSON.stringify(datosExportacion, null, 2);
+    const blob = new Blob([contenidoJSON], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    const fechaArchivo = new Date().toISOString().split('T')[0];
+    const horaArchivo = new Date().toTimeString().split(' ')[0].replace(/:/g, '-');
+    link.download = `reporte_analisis_vectorial_${fechaArchivo}_${horaArchivo}.json`;
+    
+    link.click();
+    window.URL.revokeObjectURL(url);
+    
+    console.log('✅ Reporte JSON exportado exitosamente');
   }
 }

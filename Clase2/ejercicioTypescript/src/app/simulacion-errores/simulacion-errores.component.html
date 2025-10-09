@@ -1,114 +1,212 @@
-<div class="error-simulation-container">
-  <header class="simulation-header">
-    <h1>Sistema de Visualización de Errores</h1>
-    <p>Análisis interactivo de trayectorias, relaciones y puntos críticos del código</p>
+<div class="sistema-analisis-vectorial">
+  <!-- Header Principal -->
+  <header class="header-principal">
+    <div class="header-content">
+      <h1>🔬 Sistema de Análisis Vectorial del Flujo de Código</h1>
+      <p class="subtitle">Detección Automática de Anomalías basado en Campos Vectoriales</p>
+    </div>
   </header>
 
-  <div class="control-panel">
-    <div class="filter-controls">
-      <h3>Filtros de Severidad</h3>
-      <button 
-        class="filter-btn low" 
-        (click)="filterErrorsBySeverity('low')">
-        Baja ({{getErrorCountBySeverity('low')}})
-      </button>
-      <button 
-        class="filter-btn medium" 
-        (click)="filterErrorsBySeverity('medium')">
-        Media ({{getErrorCountBySeverity('medium')}})
-      </button>
-      <button 
-        class="filter-btn high" 
-        (click)="filterErrorsBySeverity('high')">
-        Alta ({{getErrorCountBySeverity('high')}})
-      </button>
-      <button 
-        class="filter-btn critical" 
-        (click)="filterErrorsBySeverity('critical')">
-        Crítica ({{getErrorCountBySeverity('critical')}})
-      </button>
+  <!-- Panel de Control -->
+  <section class="panel-control">
+    <div class="control-container">
+      <h3>🎛️ Panel de Control</h3>
+      <div class="botones-control">
+        <button class="btn-primary" (click)="simularNuevoVector()">
+          ➕ Generar Nuevo Vector
+        </button>
+        <button class="btn-warning" (click)="limpiarReportes()">
+          🗑️ Limpiar Reportes
+        </button>
+        <button class="btn-danger" (click)="reiniciarAnalisis()">
+          🔄 Reiniciar Análisis
+        </button>
+        <button class="btn-success" (click)="exportarReportesATxt()" [disabled]="reportes.length === 0">
+          📄 Exportar TXT
+        </button>
+        <button class="btn-info" (click)="exportarReportesJSON()" [disabled]="reportes.length === 0">
+          📦 Exportar JSON
+        </button>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="charts-grid">
-    <!-- Gráfica de Trayectorias -->
-    <div class="chart-container">
-      <h3>Trayectoria y Relaciones de Errores</h3>
-      <canvas #trajectoryChart></canvas>
-      <div class="chart-description">
-        <p>Visualización espacial de errores mostrando relaciones y distribución temporal. 
-           Cada punto representa un error, el tamaño indica el tipo y el color la severidad.</p>
+  <!-- Panel de Estadísticas -->
+  <section class="estadisticas-panel">
+    <div class="estadistica-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ estadisticas.magnitudPromedio.toFixed(2) }}</div>
+        <div class="stat-label">Magnitud Promedio</div>
+      </div>
+    </div>
+    <div class="estadistica-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ estadisticas.desviacionEstandar.toFixed(2) }}</div>
+        <div class="stat-label">Desviación Estándar</div>
+      </div>
+    </div>
+    <div class="estadistica-card ok">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ estadisticas.vectoresOk }}</div>
+        <div class="stat-label">Vectores OK</div>
+      </div>
+    </div>
+    <div class="estadistica-card warning">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ estadisticas.vectoresConWarning }}</div>
+        <div class="stat-label">Warnings</div>
+      </div>
+    </div>
+    <div class="estadistica-card error">
+      <div class="stat-icon">❌</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ estadisticas.vectoresConError }}</div>
+        <div class="stat-label">Errores</div>
+      </div>
+    </div>
+    <div class="estadistica-card alert">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-info">
+        <div class="stat-value">{{ estadisticas.cambiosBruscosDetectados }}</div>
+        <div class="stat-label">Cambios Bruscos</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Gráficas -->
+  <section class="graficas-container">
+    <!-- Gráfica 1: Campo Vectorial -->
+    <div class="grafica-card">
+      <div class="card-header">
+        <h3>📍 Campo Vectorial de Flujo</h3>
+        <p class="card-description">Representación espacial del flujo de ejecución del código</p>
+      </div>
+      <div class="chart-wrapper">
+        <canvas #vectorFieldChart></canvas>
       </div>
     </div>
 
-    <!-- Gráfica de Evolución -->
-    <div class="chart-container">
-      <h3>Evolución Temporal de Severidad</h3>
-      <canvas #errorEvolutionChart></canvas>
-      <div class="chart-description">
-        <p>Tendencia de la severidad de errores a lo largo del tiempo. 
-           Muestra cómo evoluciona la complejidad de los problemas.</p>
+    <!-- Gráfica 2: Análisis de Magnitudes -->
+    <div class="grafica-card">
+      <div class="card-header">
+        <h3>📈 Análisis de Magnitudes</h3>
+        <p class="card-description">Evolución de la complejidad con línea de promedio</p>
+      </div>
+      <div class="chart-wrapper">
+        <canvas #magnitudChart></canvas>
       </div>
     </div>
 
-    <!-- Gráfica de Puntos Críticos -->
-    <div class="chart-container">
-      <h3>Distribución por Severidad</h3>
-      <canvas #criticalPointsChart></canvas>
-      <div class="chart-description">
-        <p>Distribución porcentual de errores clasificados por nivel de severidad.</p>
+    <!-- Gráfica 3: Distribución de Estados -->
+    <div class="grafica-card">
+      <div class="card-header">
+        <h3>🥧 Distribución de Estados</h3>
+        <p class="card-description">Proporción de vectores por estado</p>
+      </div>
+      <div class="chart-wrapper">
+        <canvas #estadoChart></canvas>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="error-details">
-    <h3>Detalles de Errores por Archivo</h3>
-    <div class="file-error-list">
-      <div *ngFor="let fileGroup of getKeyValuePairs(getErrorsByFile())" class="file-group">
-        <h4 class="file-name">📁 {{fileGroup.key}}</h4>
-        <div class="error-list">
-          <div 
-            *ngFor="let error of fileGroup.value" 
-            class="error-item"
-            [ngClass]="'severity-' + error.severity"
-            (click)="toggleErrorResolution(error.id)">
-            <div class="error-header">
-              <span class="error-type">{{error.errorType}}</span>
-              <span class="error-status" [ngClass]="error.resolved ? 'resolved' : 'pending'">
-                {{error.resolved ? '✅ Resuelto' : '❌ Pendiente'}}
-              </span>
+  <!-- Sección de Vectores Activos -->
+  <section class="vectores-activos">
+    <h3>🌐 Vectores Activos en el Sistema</h3>
+    <div class="vectores-grid">
+      <div 
+        *ngFor="let vector of vectores; trackBy: trackByVectorId" 
+        class="vector-card"
+        [ngClass]="'estado-' + vector.estado">
+        <div class="vector-header">
+          <span class="vector-id">{{ vector.id }}</span>
+          <span class="vector-estado">{{ getEstadoIcon(vector.estado) }} {{ vector.estado.toUpperCase() }}</span>
+        </div>
+        <div class="vector-body">
+          <div class="vector-flujo">
+            <strong>{{ vector.origen }}</strong> 
+            <span class="arrow">→</span> 
+            <strong>{{ vector.destino }}</strong>
+          </div>
+          <div class="vector-detalles">
+            <div class="detalle-item">
+              <span class="label">Magnitud:</span>
+              <span class="value">{{ vector.magnitud.toFixed(2) }}</span>
             </div>
-            <div class="error-description">{{error.description}}</div>
-            <div class="error-meta">
-              <span>Línea: {{error.line}}</span>
-              <span>Fecha: {{error.timestamp | date:'short'}}</span>
-              <span class="severity-badge severity-{{error.severity}}">{{error.severity | uppercase}}</span>
+            <div class="detalle-item">
+              <span class="label">Dirección:</span>
+              <span class="value">{{ vector.direccion }}</span>
+            </div>
+            <div class="detalle-item timestamp">
+              <span class="label">Timestamp:</span>
+              <span class="value">{{ formatearFecha(vector.timestamp) }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="legend">
-    <h4>Leyenda</h4>
-    <div class="legend-items">
-      <div class="legend-item">
-        <div class="color-indicator low"></div>
-        <span>Severidad Baja</span>
-      </div>
-      <div class="legend-item">
-        <div class="color-indicator medium"></div>
-        <span>Severidad Media</span>
-      </div>
-      <div class="legend-item">
-        <div class="color-indicator high"></div>
-        <span>Severidad Alta</span>
-      </div>
-      <div class="legend-item">
-        <div class="color-indicator critical"></div>
-        <span>Severidad Crítica</span>
+  <!-- Sección de Reportes de Anomalías -->
+  <section class="reportes-anomalias">
+    <h3>🚨 Reportes Automáticos de Anomalías</h3>
+    
+    <div *ngIf="reportes.length === 0" class="no-reportes">
+      <div class="no-reportes-icon">✨</div>
+      <p>No se han detectado anomalías en el sistema</p>
+    </div>
+
+    <div *ngIf="reportes.length > 0" class="reportes-lista">
+      <div 
+        *ngFor="let reporte of reportes; trackBy: trackByReporteId" 
+        class="reporte-card"
+        [ngClass]="getSeveridadClass(reporte.severidad)">
+        <div class="reporte-header">
+          <div class="reporte-tipo">
+            <span class="tipo-icon">{{ getTipoIcon(reporte.tipo) }}</span>
+            <span class="tipo-texto">{{ reporte.tipo.toUpperCase() }}</span>
+          </div>
+          <div class="reporte-severidad">
+            <span class="badge" [ngClass]="getSeveridadClass(reporte.severidad)">
+              {{ reporte.severidad.toUpperCase() }}
+            </span>
+          </div>
+        </div>
+        <div class="reporte-body">
+          <p class="reporte-descripcion">{{ reporte.descripcion }}</p>
+          <div *ngIf="reporte.vectorRelacionado" class="vector-relacionado">
+            <strong>Vector relacionado:</strong> 
+            {{ reporte.vectorRelacionado.id }} 
+            ({{ reporte.vectorRelacionado.origen }} → {{ reporte.vectorRelacionado.destino }})
+          </div>
+        </div>
+        <div class="reporte-footer">
+          <span class="reporte-fecha">🕒 {{ formatearFecha(reporte.fecha) }}</span>
+          <span class="reporte-id">ID: {{ reporte.id }}</span>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Footer con información -->
+  <footer class="footer-info">
+    <div class="footer-content">
+      <div class="info-section">
+        <h4>🎯 Objetivo del Análisis</h4>
+        <p>Modelar el flujo de ejecución como un campo vectorial para detectar automáticamente anomalías mediante análisis de magnitud, dirección y secuencia.</p>
+      </div>
+      <div class="info-section">
+        <h4>📋 Tipos de Anomalías Detectadas</h4>
+        <ul>
+          <li><strong>Magnitud:</strong> Valores fuera de rango esperado</li>
+          <li><strong>Dirección:</strong> Cambios bruscos en el flujo</li>
+          <li><strong>Estado:</strong> Errores consecutivos</li>
+          <li><strong>Secuencia:</strong> Patrones críticos detectados</li>
+        </ul>
+      </div>
+    </div>
+  </footer>
 </div>

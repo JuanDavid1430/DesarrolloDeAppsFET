@@ -1,0 +1,28 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button auto-hide="false"></ion-menu-button>
+      </ion-buttons>
+     <ion-title>
+      Mi APP
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+ 
+ <ion-list lines="full">
+  <ion-item>
+    <ion-label>
+      <h2>Ir a página 2</h2>
+    </ion-label>
+  </ion-item>
+ </ion-list>
+
+ <div class="ion-padding">
+   <ion-button expand="block" routerLink="/pagina2" color="primary">
+     <ion-icon slot="start" name="arrow-forward"></ion-icon>
+     Página 2
+   </ion-button>
+ </div>
+</ion-content>
