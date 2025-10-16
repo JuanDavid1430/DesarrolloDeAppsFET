@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Rick and Morty Characters</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Rick and Morty</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Botones superiores -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <ion-button 
+          expand="block" 
+          color="primary" 
+          (click)="loadCharacters()"
+          [disabled]="isLoading">
+          {{ isLoading ? 'Cargando...' : 'Cargar' }}
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button 
+          expand="block" 
+          color="secondary"
+          (click)="showDeadCharacters()">
+          Ver muertos
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Lista de personajes en grid de 2 columnas -->
+  <div *ngIf="characters.length > 0">
+    <ion-grid class="characters-grid">
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="5" size-md="3" *ngFor="let character of characters">
+          <ion-card class="character-card">
+            <ion-card-content>
+              <!-- Imagen del personaje centrada -->
+              <div class="character-image-container">
+                <ion-img 
+                  [src]="character.image" 
+                  [alt]="character.name"
+                  class="character-image">
+                </ion-img>
+              </div>
+              
+              <!-- Información del personaje con botón al lado -->
+              <div class="character-info">
+                <div class="text-section">
+                  <ion-card-title class="character-name">{{ character.name }}</ion-card-title>
+                  <ion-card-subtitle>
+                    <span [class]="'status-' + character.status.toLowerCase()">{{ character.status }}</span>
+                  </ion-card-subtitle>
+                  <ion-card-subtitle>{{ character.species }}</ion-card-subtitle>
+                </div>
+                
+                <div class="button-section">
+                  <ion-button 
+                    color="danger" 
+                    size="small"
+                    fill="solid"
+                    (click)="killCharacter(character)"
+                    [disabled]="character.status === 'Dead'">
+                    {{ character.status === 'Dead' ? 'RIP' : 'Matar' }}
+                  </ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Mensaje cuando no hay personajes -->
+  <div *ngIf="characters.length === 0 && !isLoading" class="no-characters">
+    <p *ngIf="!showingDeadOnly">Presiona "Cargar" para obtener los personajes</p>
+    <p *ngIf="showingDeadOnly">No hay personajes muertos para mostrar</p>
+  </div>
+
+</ion-content>

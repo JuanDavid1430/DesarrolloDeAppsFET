@@ -1,0 +1,82 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+     <ion-buttons slot="start">
+      <ion-back-button defaultHref="/ricky"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Personajes Muertos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title size="large" class="ion-text-center">Personajes Muertos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <!-- Botón para limpiar todos los personajes muertos -->
+  <div *ngIf="deadCharacters.length > 0" class="clear-button-container">
+    <ion-button 
+      expand="block" 
+      color="warning" 
+      (click)="clearAllDeadCharacters()">
+      <ion-icon slot="start" name="trash"></ion-icon>
+      Limpiar cementerio
+    </ion-button>
+  </div>
+
+  <!-- Lista de personajes muertos -->
+  <div *ngIf="deadCharacters.length > 0">
+    <ion-grid class="characters-grid">
+      <ion-row class="ion-justify-content-center">
+        <ion-col size="5" size-md="3" *ngFor="let character of deadCharacters">
+          <ion-card class="character-card dead-card">
+            <ion-card-content>
+              <!-- Imagen del personaje con efecto de muerto -->
+              <div class="character-image-container">
+                <ion-img 
+                  [src]="character.image" 
+                  [alt]="character.name"
+                  class="character-image dead-image">
+                </ion-img>
+                <div class="rip-overlay">RIP</div>
+              </div>
+              
+              <!-- Información del personaje con botón para revivir -->
+              <div class="character-info">
+                <div class="text-section">
+                  <ion-card-title class="character-name">{{ character.name }}</ion-card-title>
+                  <ion-card-subtitle>
+                    <span class="status-dead">{{ character.status }}</span>
+                  </ion-card-subtitle>
+                  <ion-card-subtitle>{{ character.species }}</ion-card-subtitle>
+                </div>
+                
+                <div class="button-section">
+                  <ion-button 
+                    color="success" 
+                    size="small"
+                    fill="solid"
+                    (click)="reviveCharacter(character)">
+                    Revivir
+                  </ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Mensaje cuando no hay personajes muertos -->
+  <div *ngIf="deadCharacters.length === 0" class="no-characters">
+    <div class="empty-cemetery">
+      <h3>🪦 Cementerio vacío</h3>
+      <p>No hay personajes muertos aún.</p>
+      <p>¡Ve a matar algunos personajes!</p>
+    </div>
+  </div>
+
+</ion-content>

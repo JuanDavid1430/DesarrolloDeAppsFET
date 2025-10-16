@@ -1,0 +1,142 @@
+.characters-grid {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.character-card {
+  margin: 8px auto;
+  border-radius: 12px;
+  height: auto;
+  max-width: 180px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.dead-card {
+  background-color: #2a2a2a;
+  border: 2px solid #666;
+}
+
+.character-image-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.character-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dead-image {
+  filter: grayscale(100%) brightness(0.6);
+}
+
+.rip-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.character-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.text-section {
+  flex: 1;
+  text-align: left;
+}
+
+.button-section {
+  flex-shrink: 0;
+}
+
+.character-name {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #fff;
+}
+
+.status-dead {
+  color: #eb445a;
+  font-weight: bold;
+}
+
+.no-characters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  color: #8c8c8c;
+}
+
+.empty-cemetery {
+  text-align: center;
+  
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    color: #666;
+  }
+  
+  p {
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+}
+
+.clear-button-container {
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+ion-card-title {
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+ion-card-subtitle {
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  color: #ccc;
+}
+
+ion-card-content {
+  padding: 12px;
+}
+
+// Botón más pequeño
+ion-button[size="small"] {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  font-size: 0.7rem;
+  height: auto;
+  min-height: 28px;
+}
+
+// Responsive para pantallas más grandes
+@media (min-width: 768px) {
+  .characters-grid {
+    max-width: 800px;
+  }
+  
+  .character-card {
+    max-width: 200px;
+  }
+}
